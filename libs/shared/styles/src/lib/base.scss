@@ -24,9 +24,9 @@ input {
 
 a {
   cursor: pointer;
-  color: $pink-accent;
+  color: $pink-dark;
 
   &:hover {
-    color: $pink-dark;
+    color: $pink-very-dark;
   }
 }
