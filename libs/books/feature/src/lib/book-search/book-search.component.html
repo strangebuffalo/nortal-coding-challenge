@@ -1,13 +1,13 @@
 <form [formGroup]="searchForm" (submit)="searchBooks()">
   <mat-form-field floatLabel="never">
-    <input
+    <input #searchField
       autoFocus
       matInput
       type="search"
       placeholder="Search for books to add to your reading list"
       formControlName="term"
     />
-    <button mat-icon-button matSuffix>
+    <button mat-icon-button matSuffix [attr.aria-label]="'Execute search for ' + searchField.value">
       <mat-icon>search</mat-icon>
     </button>
   </mat-form-field>
@@ -48,7 +48,9 @@
 <ng-template #empty>
   <div class="empty">
     <p>
-      Try searching for a topic, for example "<a (click)="searchExample()"
+      Try searching for a topic, for example "<a 
+        (click)="searchExample()"
+        aria-label="Execute sample search for 'Javascript'"
         >JavaScript</a
       >".
     </p>
