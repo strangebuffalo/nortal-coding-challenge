@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
   addToReadingList,
@@ -9,13 +9,17 @@ import {
 } from '@tmo/books/data-access';
 import { FormBuilder } from '@angular/forms';
 import { Book } from '@tmo/shared/models';
+import { fromEvent, Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, map, startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'tmo-book-search',
   templateUrl: './book-search.component.html',
   styleUrls: ['./book-search.component.scss']
 })
-export class BookSearchComponent implements OnInit {
+export class BookSearchComponent implements OnInit, AfterViewInit {
+  @ViewChild('searchField') searchField: ElementRef;
+
   books: ReadingListBook[];
 
   searchForm = this.fb.group({
@@ -35,6 +39,10 @@ export class BookSearchComponent implements OnInit {
     this.store.select(getAllBooks).subscribe(books => {
       this.books = books;
     });
+  }
+
+  ngAfterViewInit(): void {
+    this.subscribeToSearchInputChanges();
   }
 
   formatDate(date: void | string) {
@@ -58,5 +66,21 @@ export class BookSearchComponent implements OnInit {
     } else {
       this.store.dispatch(clearSearch());
     }
+  }
+
+  subscribeToSearchInputChanges(): void {
+    fromEvent<any>(this.searchField.nativeElement, 'keyup')
+      .pipe(
+          map(event => event.target.value),
+          debounceTime(500),
+          distinctUntilChanged()
+      )
+      .subscribe(searchTerm => {
+        if (searchTerm) {
+          this.store.dispatch(searchBooks({ term: searchTerm }));
+        } else {
+          this.store.dispatch(clearSearch());
+        }
+      });
   }
 }
