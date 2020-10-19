@@ -40,6 +40,11 @@
   white-space: nowrap;
 }
 
+.reading-list-item--details--finished-date {
+  font-size: .6rem;
+  color: $gray40;
+}
+
 .empty {
   font-weight: 100;
   font-size: 1rem;
